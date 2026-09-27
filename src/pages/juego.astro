@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import Juego, { type ModuloDeJuego } from '../features/juego/Juego';
+import { paresPublicables, sePuedeJugar } from '../features/juego/logic/juego';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { esPublicable, soloRevisado } from '../lib/content/publicables';
+import '../styles/juego.css';
+
+// Only pairs of published lessons: drafts stay out with SOLFEO_SOLO_REVISADO=1, and so do pairs
+// of lessons that do not exist yet.
+const filtrar = soloRevisado(process.env);
+const publicadas = new Set(
+  (await getCollection('lecciones', (l) => esPublicable(l.data.estado, filtrar))).map((l) => l.id),
+);
+const paresPorModulo = new Map(
+  (await getCollection('pares')).map((entrada) => [entrada.id, entrada.data]),
+);
+const modulos: ModuloDeJuego[] = (await getCollection('modulos'))
+  .map((m) => m.data)
+  .sort((a, b) => a.orden - b.orden)
+  .map((m) => ({
+    id: m.id,
+    titulo: m.titulo,
+    pares: paresPublicables(paresPorModulo.get(m.id) ?? [], publicadas),
+  }))
+  .filter((m) => sePuedeJugar(m.pares));
+---
+
+<BaseLayout
+  title="Emparejar conceptos"
+  description="Juego de emparejar conceptos con sus definiciones."
+>
+  <div class="juego-page">
+    <h1>Emparejar conceptos</h1>
+    <p class="juego-lede">
+      Une cada término con su definición. Elige módulo y nivel, y se sortea una ronda de pares.
+    </p>
+    {modulos.length > 0 ? (
+      <Juego client:load modulos={modulos} />
+    ) : (
+      <div class="juego-card juego-vacio">
+        <h2>Aún no hay pares para jugar</h2>
+        <p>
+          Los pares salen de las lecciones publicadas y todavía no hay suficientes para una ronda.
+          Mientras tanto, el camino tiene las lecciones con su quiz.
+        </p>
+        <a class="btn btn-primary" href="/">
+          Ir al camino
+          <span class="icon" aria-hidden="true">
+            arrow_forward
+          </span>
+        </a>
+      </div>
+    )}
+  </div>
+</BaseLayout>

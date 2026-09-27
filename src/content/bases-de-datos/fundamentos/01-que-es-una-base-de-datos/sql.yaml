@@ -1,0 +1,6 @@
+# Resultados esperados de los bloques SQL de la lección, obtenidos ejecutándolos contra tienda.sql.
+q1:
+  columnas: ['id', 'nombre', 'precio']
+  filas:
+    - [1, 'Portátil Ligero 13', 899]
+  orden_importa: false

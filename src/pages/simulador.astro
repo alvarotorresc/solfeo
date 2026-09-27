@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import Simulador from '../features/simulador/Simulador';
+import type { CasoDeIsla, LeccionDeRepaso } from '../features/simulador/tipos';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { caminoDelModulo } from '../lib/camino';
+import { renderizarMarkdown } from '../lib/content/markdown';
+import { esPublicable, soloRevisado } from '../lib/content/publicables';
+import '../styles/leccion.css';
+import '../styles/prism.css';
+import '../styles/quiz.css';
+import '../styles/simulador.css';
+
+// Cases have no review state yet, so every case is published; lesson links follow the lessons.
+const filtrar = soloRevisado(process.env);
+const publicadas = new Set(
+  (await getCollection('lecciones', (l) => esPublicable(l.data.estado, filtrar))).map((l) => l.id),
+);
+
+const casos: CasoDeIsla[] = await Promise.all(
+  (await getCollection('casos'))
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .map(async ({ data }) => ({
+      id: data.id,
+      modulo: data.modulo,
+      nivel: data.nivel,
+      titulo: data.titulo,
+      escenario: data.escenario,
+      pregunta: data.pregunta,
+      repreguntas: data.repreguntas,
+      rubrica: data.rubrica,
+      modeloHtml: await renderizarMarkdown(data.respuesta_modelo, data.id),
+    })),
+);
+
+// The island only gets the modules with cases and the lessons their rubrics point at.
+const conCasos = new Set(casos.map((caso) => caso.modulo));
+const modulos = (await getCollection('modulos'))
+  .map((m) => m.data)
+  .filter((m) => conCasos.has(m.id))
+  .sort((a, b) => a.orden - b.orden)
+  .map(({ id, titulo }) => ({ id, titulo }));
+
+const citadas = new Set(casos.flatMap((caso) => caso.rubrica.flatMap((punto) => punto.lecciones)));
+const lecciones: Record<string, LeccionDeRepaso> = {};
+for (const temario of await getCollection('temarios')) {
+  const camino = caminoDelModulo(temario.data, publicadas);
+  for (const leccion of Object.values(camino).flat()) {
+    if (citadas.has(leccion.id)) {
+      lecciones[leccion.id] = { titulo: leccion.titulo, href: leccion.href };
+    }
+  }
+}
+---
+
+<BaseLayout
+  title="Simulador de entrevista"
+  description="Simulador de entrevista técnica con casos prácticos y autoevaluación guiada."
+>
+  <div class="sim-page">
+    <h1>Simulador de entrevista</h1>
+    <p class="lede">
+      Casos como los de una entrevista técnica: un escenario, una pregunta abierta y las repreguntas
+      que haría quien entrevista. Al final ves la respuesta modelo y te corriges con la rúbrica.
+    </p>
+    {casos.length > 0 ? (
+      <Simulador client:load casos={casos} modulos={modulos} lecciones={lecciones} />
+    ) : (
+      <p class="soon">
+        <span class="icon" aria-hidden="true">
+          schedule
+        </span>
+        Aún no hay casos publicados.
+      </p>
+    )}
+  </div>
+  <script>
+    import '../scripts/copiar';
+  </script>
+</BaseLayout>

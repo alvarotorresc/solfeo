@@ -1,0 +1,136 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Quiz, { type PreguntaDeIsla } from '../../../features/quiz/Quiz';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { NOMBRE_NIVEL, caminoDelModulo, vecinas } from '../../../lib/camino';
+import { lessonRouteParams } from '../../../lib/content/lesson-route';
+import { esPublicable, soloRevisado } from '../../../lib/content/publicables';
+import { resaltarSql } from '../../../lib/content/resaltar-sql';
+import '../../../styles/leccion.css';
+import '../../../styles/prism.css';
+import '../../../styles/quiz.css';
+
+export async function getStaticPaths() {
+  const filtrar = soloRevisado(process.env);
+  const lecciones = await getCollection('lecciones', (l) => esPublicable(l.data.estado, filtrar));
+  const publicadas = new Set(lecciones.map((l) => l.id));
+  const temarios = await getCollection('temarios');
+  const modulos = await getCollection('modulos');
+  return lecciones.map((leccion) => {
+    if (!leccion.filePath) throw new Error(`La lección ${leccion.id} no tiene archivo`);
+    const temario = temarios.find((t) => t.data.modulo === leccion.data.modulo);
+    const modulo = modulos.find((m) => m.data.id === leccion.data.modulo);
+    if (!temario || !modulo) throw new Error(`Falta el módulo o el temario de ${leccion.id}`);
+    const camino = caminoDelModulo(temario.data, publicadas);
+    return {
+      params: lessonRouteParams(leccion.filePath),
+      props: {
+        leccion,
+        tituloModulo: modulo.data.titulo,
+        vecinas: vecinas(camino, leccion.data.nivel, leccion.id),
+      },
+    };
+  });
+}
+
+const { leccion, tituloModulo, vecinas: cerca } = Astro.props;
+const { id, titulo, resumen, nivel, fuentes, estado } = leccion.data;
+const { Content } = await render(leccion);
+const quiz = await getEntry('quizzes', id);
+const preguntas: PreguntaDeIsla[] =
+  quiz?.data.preguntas.map((p) => ({
+    id: p.id,
+    enunciado: p.enunciado,
+    ...(p.sql ? { sqlHtml: resaltarSql(p.sql) } : {}),
+    opciones: p.opciones,
+  })) ?? [];
+
+const dominio = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+---
+
+<BaseLayout title={titulo} description={resumen} view="leccion">
+  <article class="lesson-page">
+    <a class="back" href="/">
+      <span class="icon" aria-hidden="true">
+        arrow_back
+      </span>
+      Camino
+    </a>
+    <ol class="crumbs" aria-label="Estás en">
+      <li>{tituloModulo}</li>
+      <li>{NOMBRE_NIVEL[nivel]}</li>
+      <li>
+        Lección {cerca.posicion} de {cerca.total}
+      </li>
+      {estado === 'borrador' && <li class="draft">Borrador</li>}
+    </ol>
+    <h1>{titulo}</h1>
+    <p class="lede">{resumen}</p>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <section class="further" aria-labelledby="h-further">
+      <h2 id="h-further">Para profundizar</h2>
+      <ul>
+        {fuentes.map((fuente) => (
+          <li>
+            <a href={fuente.url} target="_blank" rel="noopener noreferrer">
+              {fuente.titulo} <span>{dominio(fuente.url)}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {preguntas.length > 0 && (
+      <section class="quiz-zone" aria-labelledby="h-quiz">
+        <p class="qintro">
+          ¿Lo tienes? {preguntas.length} preguntas cortas, con la explicación de cada respuesta.
+        </p>
+        <Quiz client:visible leccion={id} preguntas={preguntas} caminoHref="/" />
+      </section>
+    )}
+
+    <nav class="pager" aria-label="Otras lecciones del nivel">
+      {[cerca.anterior, cerca.siguiente].map((otra, i) => {
+        const rotulo = i === 0 ? 'Anterior' : 'Siguiente';
+        const clase = i === 0 ? 'prev' : 'next';
+        if (!otra) return <span class={`pager-gap ${clase}`} />;
+        return otra.href ? (
+          <a class={`pager-card ${clase}`} href={otra.href}>
+            <small>
+              {i === 0 && (
+                <span class="icon" aria-hidden="true">
+                  arrow_back
+                </span>
+              )}
+              {rotulo}
+              {i === 1 && (
+                <span class="icon" aria-hidden="true">
+                  arrow_forward
+                </span>
+              )}
+            </small>
+            <b>{otra.titulo}</b>
+          </a>
+        ) : (
+          <div class={`pager-card off ${clase}`}>
+            <small>{rotulo}</small>
+            <b>{otra.titulo}</b>
+            <span class="soon">
+              <span class="icon" aria-hidden="true">
+                schedule
+              </span>
+              Próximamente
+            </span>
+          </div>
+        );
+      })}
+    </nav>
+  </article>
+  <script>
+    import '../../../scripts/copiar';
+  </script>
+</BaseLayout>

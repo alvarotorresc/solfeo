@@ -1,0 +1,51 @@
+# Módulos de Solfeo por orden de estudio. «disponible: false» significa que aún no tienen lecciones.
+- id: fundamentos-de-programacion
+  prefijo: fp
+  orden: 1
+  titulo: Fundamentos de programación
+  disponible: false
+- id: estructuras-de-datos-y-algoritmos
+  prefijo: eda
+  orden: 2
+  titulo: Estructuras de datos y algoritmos
+  disponible: false
+- id: bases-de-datos
+  prefijo: bd
+  orden: 3
+  titulo: Bases de datos
+  disponible: true
+- id: redes-y-web
+  prefijo: rw
+  orden: 4
+  titulo: Redes y web
+  disponible: false
+- id: sistemas-operativos-y-concurrencia
+  prefijo: so
+  orden: 5
+  titulo: Sistemas operativos y concurrencia
+  disponible: false
+- id: diseno-de-software
+  prefijo: ds
+  orden: 6
+  titulo: Diseño de software
+  disponible: false
+- id: arquitectura
+  prefijo: ar
+  orden: 7
+  titulo: Arquitectura
+  disponible: false
+- id: testing
+  prefijo: ts
+  orden: 8
+  titulo: Testing
+  disponible: false
+- id: seguridad
+  prefijo: se
+  orden: 9
+  titulo: Seguridad
+  disponible: false
+- id: entrega-y-operacion
+  prefijo: eo
+  orden: 10
+  titulo: Entrega y operación
+  disponible: false

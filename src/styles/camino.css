@@ -1,0 +1,561 @@
+/* Home page: hero, level selector, progress and the path of modules. */
+.home {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  grid-template-areas: 'hero aside' 'path aside';
+  gap: 0 56px;
+  align-items: start;
+}
+.hero {
+  grid-area: hero;
+  padding-bottom: 36px;
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 4.6vw, 3.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+  font-weight: 800;
+  max-width: 14ch;
+}
+.hero p {
+  color: var(--muted);
+  font-size: 1.15rem;
+  max-width: 44ch;
+  margin: 0 0 28px;
+}
+.hero .hint[hidden] {
+  display: none;
+}
+.aside {
+  grid-area: aside;
+  position: sticky;
+  top: 88px;
+  display: grid;
+  gap: 16px;
+}
+.pathwrap {
+  grid-area: path;
+}
+
+/* Only the lists and labels of the chosen level are shown. The inline script in the layout sets
+   data-nivel on <html> before paint; without it, Fundamentos. */
+.por-nivel {
+  display: none;
+}
+:root:not([data-nivel]) .por-nivel[data-nivel='fundamentos'],
+:root[data-nivel='fundamentos'] .por-nivel[data-nivel='fundamentos'],
+:root[data-nivel='intermedio'] .por-nivel[data-nivel='intermedio'],
+:root[data-nivel='avanzado'] .por-nivel[data-nivel='avanzado'] {
+  display: revert;
+}
+
+/* ---------- selector de nivel ---------- */
+.seg {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 4px;
+  border: 0;
+  margin: 0;
+}
+.seg legend {
+  padding: 0;
+}
+.seg-thumb {
+  --i: 0;
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transform: translateX(calc(var(--i) * 100%));
+  transition: transform 0.34s var(--ease-drawer);
+}
+:root[data-nivel='intermedio'] .seg-thumb {
+  --i: 1;
+}
+:root[data-nivel='avanzado'] .seg-thumb {
+  --i: 2;
+}
+.seg label {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 4px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--muted);
+  transition:
+    color 0.2s ease,
+    transform 0.14s var(--ease-out);
+}
+.seg label:active {
+  transform: scale(0.95);
+}
+.seg input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.seg label:has(input:checked) {
+  color: var(--text);
+}
+.seg label:has(input:focus-visible) {
+  outline: 3px solid var(--accent-bright);
+  outline-offset: -3px;
+}
+
+/* ---------- progreso ---------- */
+.prog {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.ring {
+  --p: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(var(--accent-bright) calc(var(--p) * 1turn), var(--surface-2) 0);
+}
+.ring span {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1rem;
+}
+.prog strong {
+  display: block;
+  font-size: 1.05rem;
+}
+.prog small {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.reset {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.reset .hint {
+  margin: 0;
+}
+
+/* ---------- para practicar ---------- */
+.tools {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.tools a {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+  text-decoration: none;
+  border-radius: var(--r-btn);
+  padding: 10px;
+  min-height: 52px;
+  transition:
+    background-color 0.15s ease,
+    transform 0.14s var(--ease-out);
+}
+.tools a:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tools a:hover {
+    background: var(--surface-2);
+  }
+}
+.tools .ti {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--mark);
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  flex: none;
+}
+.tools b {
+  display: block;
+  font-size: 0.98rem;
+}
+.tools small {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.35;
+  display: block;
+}
+
+/* ---------- camino ---------- */
+.path {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+.path::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 14px;
+  bottom: 14px;
+  width: 0;
+  border-left: 2px dashed var(--line);
+}
+.stop {
+  position: relative;
+  padding: 0 0 30px 60px;
+  animation: rise 0.42s var(--ease-out) both;
+}
+.stop:last-child {
+  padding-bottom: 0;
+}
+.stop:nth-child(2) {
+  animation-delay: 45ms;
+}
+.stop:nth-child(3) {
+  animation-delay: 90ms;
+}
+.stop:nth-child(4) {
+  animation-delay: 135ms;
+}
+.stop:nth-child(5) {
+  animation-delay: 180ms;
+}
+.stop:nth-child(6) {
+  animation-delay: 225ms;
+}
+.stop:nth-child(7) {
+  animation-delay: 270ms;
+}
+.stop:nth-child(8) {
+  animation-delay: 315ms;
+}
+.stop:nth-child(9) {
+  animation-delay: 360ms;
+}
+.stop:nth-child(n + 10) {
+  animation-delay: 405ms;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.node {
+  position: absolute;
+  left: 8px;
+  top: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.stop h3 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.stop .num {
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-right: 6px;
+}
+.stop.off h3 {
+  color: var(--muted);
+}
+
+.stop.live {
+  padding-bottom: 36px;
+}
+.stop.live .node {
+  --p: 0;
+  width: 40px;
+  height: 40px;
+  left: 0;
+  top: 10px;
+  border: 0;
+  background: conic-gradient(var(--accent-bright) calc(var(--p) * 1turn), var(--surface-2) 0);
+}
+.stop.live .node::after {
+  content: attr(data-n);
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.live-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
+  padding: 24px 24px 16px;
+}
+.live-card header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px 12px;
+  margin-bottom: 18px;
+}
+.live-card h3 {
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+/* Lessons of a level: a solid rail that fills as lessons get done. */
+.lessons {
+  --fill: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s var(--ease-out);
+}
+.lessons.swap {
+  opacity: 0;
+  transform: translateY(4px);
+}
+.lessons::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  background: var(--line);
+  border-radius: 2px;
+}
+.lessons::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 18px;
+  width: 2px;
+  background: var(--accent-bright);
+  border-radius: 2px;
+  height: calc((100% - 36px) * var(--fill));
+  transition: height 0.5s var(--ease-out);
+}
+.lesson {
+  position: relative;
+}
+.lesson > a,
+.lesson > .row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px 9px 0;
+  min-height: 48px;
+  border-radius: var(--r-btn);
+  text-decoration: none;
+}
+.lesson > a {
+  transition:
+    background-color 0.15s ease,
+    transform 0.14s var(--ease-out);
+}
+.lesson > a:active {
+  transform: scale(0.985);
+}
+@media (hover: hover) and (pointer: fine) {
+  .lesson > a:hover {
+    background: var(--surface-2);
+  }
+}
+.dot {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.dot .icon {
+  font-size: 1.05rem;
+}
+.lesson .dot .fill {
+  display: none;
+}
+.lesson.done .dot {
+  background: var(--accent-bright);
+  border-color: var(--accent-bright);
+  color: #fff;
+}
+.lesson.done .dot .n {
+  display: none;
+}
+.lesson.done .dot .fill {
+  display: inline-block;
+}
+.lesson.current .dot {
+  border-color: var(--accent-bright);
+  border-width: 3px;
+  color: var(--text);
+  box-shadow: 0 0 0 5px var(--mark);
+}
+.lesson .t {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.lesson.off .t,
+.lesson.done .t {
+  color: var(--muted);
+  font-weight: 400;
+}
+.lesson .state {
+  font-size: 0.84rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.lesson.current .state {
+  color: var(--accent);
+  font-weight: 700;
+}
+.lesson.test .dot {
+  border-radius: 8px;
+}
+.lesson.test .t {
+  font-weight: 600;
+  color: var(--text);
+}
+.lesson.test .t small {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 960px) {
+  .home {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'hero' 'aside' 'path';
+    gap: 0;
+  }
+  .aside {
+    position: static;
+    margin-bottom: 36px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .hero p {
+    font-size: 1.05rem;
+  }
+  .hero .btn {
+    white-space: normal;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    padding: 12px 18px;
+    line-height: 1.3;
+  }
+  .aside {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .stop {
+    padding-left: 48px;
+  }
+  .path::before {
+    left: 15px;
+  }
+  .node {
+    left: 4px;
+  }
+  .stop.live .node {
+    width: 34px;
+    height: 34px;
+    left: -1px;
+  }
+  .live-card {
+    padding: 18px 14px 10px;
+  }
+  /* Only the lesson to continue keeps its label on screen; the rest stay for screen readers. */
+  .lesson:not(.current) .state {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+/* ---------- movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .stop {
+    animation: none;
+  }
+  .seg-thumb,
+  .lessons,
+  .lessons::after {
+    transition-property: opacity, background-color, color;
+  }
+  .lessons.swap {
+    transform: none;
+  }
+  .seg label:active,
+  .tools a:active,
+  .lesson > a:active {
+    transform: none;
+  }
+}

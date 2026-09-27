@@ -1,0 +1,66 @@
+# Resultados esperados de los bloques SQL de la lección, obtenidos ejecutándolos contra tienda.sql.
+q1:
+  columnas: ['id', 'nombre', 'categoria_id', 'precio', 'stock']
+  num_filas: 40
+  orden_importa: false
+q2:
+  columnas: ['nombre', 'precio']
+  filas:
+    - ['Portátil Pro 15', 1499]
+    - ['Portátil Ligero 13', 899]
+    - ['Portátil Estudiante 14', 549]
+    - ['Monitor ultrapanorámico', 529]
+  orden_importa: true
+q3:
+  columnas: ['nombre', 'alta']
+  filas:
+    - ['Patricia Marín', '2023-01-09']
+    - ['Alicia Cortés', '2023-04-24']
+    - ['Mario Méndez', '2023-08-24']
+    - ['Carmen Herrera', '2023-11-20']
+    - ['Tomás Campos', '2024-02-01']
+    - ['Rafael Diez', '2024-10-30']
+  orden_importa: true
+q4:
+  columnas: ['nombre', 'precio']
+  filas:
+    - ['Teclado inalámbrico', 39.9]
+    - ['Ratón vertical', 45]
+    - ['Ratón para juegos', 59.9]
+  orden_importa: true
+q5:
+  columnas: ['id', 'fecha', 'estado']
+  filas:
+    - [295, '2024-12-23', 'pendiente']
+    - [294, '2024-12-22', 'pendiente']
+    - [293, '2024-12-21', 'pendiente']
+    - [292, '2024-12-20', 'pendiente']
+    - [291, '2024-12-18', 'pendiente']
+  orden_importa: true
+q6:
+  columnas: ['ciudad']
+  filas:
+    - [null]
+    - ['A Coruña']
+    - ['Alicante']
+    - ['Barcelona']
+    - ['Bilbao']
+  orden_importa: true
+q7:
+  columnas: ['nombre', 'ciudad']
+  filas:
+    - ['Jorge Gallego', 'A Coruña']
+    - ['Óscar Rubio', 'Alicante']
+    - ['Beatriz Ortega', 'Barcelona']
+  orden_importa: true
+q8:
+  columnas: ['nombre']
+  filas: []
+  orden_importa: false
+q9:
+  columnas: ['nombre']
+  filas:
+    - ['Cristina Blanco']
+    - ['Pablo Moreno']
+    - ['Víctor Cano']
+  orden_importa: true

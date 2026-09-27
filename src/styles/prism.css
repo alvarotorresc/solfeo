@@ -1,0 +1,43 @@
+/*
+ * Syntax colours for code highlighted with Prism at build time, using the palette tokens from
+ * global.css. Code blocks are dark in both themes. Plain classes only, no inline styles, so the
+ * content security policy stays strict.
+ */
+pre[class*='language-'],
+code[class*='language-'] {
+  color: var(--code-text);
+  font-family: var(--mono);
+  tab-size: 2;
+}
+
+.token.comment,
+.token.prolog {
+  color: var(--tok-com);
+  font-style: italic;
+}
+
+.token.keyword,
+.token.important {
+  color: var(--tok-kw);
+  font-weight: 600;
+}
+
+.token.string,
+.token.char {
+  color: var(--tok-str);
+}
+
+.token.number,
+.token.boolean {
+  color: var(--tok-num);
+}
+
+.token.function,
+.token.variable {
+  color: var(--code-text);
+}
+
+.token.operator,
+.token.punctuation {
+  color: var(--tok-op);
+}

@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Playground from '../features/playground/Playground';
+import '../styles/playground.css';
+
+// No extra CSP here. The SQLite worker is a same-origin file under /_astro/, which the page's
+// script-src 'self' already allows (worker-src falls back to it). Its wasm is compiled inside the
+// worker, which follows the CSP of its own response (netlify.toml), not this page's <meta>.
+---
+
+<BaseLayout
+  title="Playground"
+  description="Playground de SQL: consulta la base de ejemplo tienda desde el navegador."
+>
+  <header class="pg-head">
+    <h1>Playground de SQL</h1>
+    <p>
+      La base de ejemplo <code>tienda</code> vive en tu navegador. Escribe una consulta, ejecútala
+      y, si la estropeas, reiníciala.
+    </p>
+  </header>
+  <Playground client:load />
+  <noscript>
+    <p>El playground necesita JavaScript: SQLite se ejecuta en tu navegador.</p>
+  </noscript>
+</BaseLayout>

@@ -1,0 +1,345 @@
+/* Lesson page: reading bar, header, prose, code frames, sources and pager. */
+.readbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-bright);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 30;
+  display: none;
+}
+@supports (animation-timeline: scroll()) {
+  body[data-view='leccion'] .readbar {
+    display: block;
+    animation: readp linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes readp {
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.lesson-page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  min-height: 44px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .back:hover {
+    color: var(--text);
+  }
+}
+.crumbs {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 0;
+  margin: 18px 0 10px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.crumbs li + li::before {
+  content: '›';
+  margin-right: 8px;
+  color: var(--line);
+}
+.crumbs li.draft::before {
+  content: none;
+}
+.crumbs .draft {
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px dashed var(--line);
+  border-radius: 999px;
+  padding: 0 8px;
+}
+.lesson-page h1 {
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin: 0 0 20px;
+  font-weight: 800;
+}
+.lede {
+  font-size: 1.22rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0 0 20px;
+}
+
+/* ---------- prosa ---------- */
+.prose > * {
+  max-width: 66ch;
+}
+.prose p,
+.prose ul,
+.prose ol {
+  margin: 0 0 20px;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+.prose li {
+  margin: 0 0 6px;
+}
+.prose li::marker {
+  color: var(--muted);
+}
+.prose h2 {
+  font-size: 1.45rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 44px 0 12px;
+}
+.prose h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 32px 0 8px;
+}
+.prose strong {
+  font-weight: 700;
+}
+.prose a {
+  text-decoration-color: var(--accent-bright);
+  text-underline-offset: 4px;
+}
+.prose :not(pre) > code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  background: var(--surface-2);
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+}
+.prose blockquote {
+  margin: 28px 0;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.prose blockquote > :last-child {
+  margin-bottom: 0;
+}
+.prose table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.98rem;
+  margin: 0 0 28px;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  padding: 11px 18px;
+  text-align: left;
+  border-top: 1px solid var(--line);
+}
+.prose th {
+  font: 600 0.84rem/1.2 var(--mono);
+  color: var(--muted);
+  background: var(--surface-2);
+  border-top: 0;
+}
+/* Column alignment from Markdown tables, as classes: the CSP blocks inline styles. */
+.prose .align-left {
+  text-align: left;
+}
+.prose .align-center {
+  text-align: center;
+}
+.prose .align-right {
+  text-align: right;
+}
+
+/* ---------- bloques de código (marco generado en build) ---------- */
+.prose > .code {
+  max-width: none;
+}
+.code {
+  margin: 28px 0;
+  border-radius: var(--r-card);
+  background: var(--code-bg);
+  color: var(--code-text);
+  overflow: hidden;
+}
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 6px 18px;
+  font-size: 0.84rem;
+  color: #b6bbc2;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+.copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  color: #d5d8dc;
+  cursor: pointer;
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  transition:
+    transform 0.14s var(--ease-out),
+    background-color 0.15s ease;
+}
+.copy .icon {
+  font-size: 1.05rem;
+}
+.copy:active {
+  transform: scale(0.95);
+}
+@media (hover: hover) and (pointer: fine) {
+  .copy:hover {
+    background: rgb(255 255 255 / 0.08);
+  }
+}
+.code pre {
+  margin: 0;
+  padding: 18px;
+  overflow-x: auto;
+  font:
+    400 0.95rem/1.7 var(--mono),
+    monospace;
+  tab-size: 2;
+}
+
+/* ---------- fuentes ---------- */
+.further {
+  margin: 40px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.further h2 {
+  font-size: 1.1rem;
+  margin: 0 0 10px;
+}
+.further ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+.further a {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  align-items: baseline;
+  padding: 8px 0;
+  text-decoration-color: var(--accent-bright);
+  text-underline-offset: 4px;
+  font-weight: 600;
+}
+.further a span {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+/* ---------- lección anterior y siguiente ---------- */
+.pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 40px;
+}
+.pager-card {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  padding: 16px 18px;
+  border-radius: var(--r-card);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    transform 0.14s var(--ease-out);
+}
+.pager-card.prev {
+  justify-items: start;
+}
+.pager-card.next {
+  text-align: right;
+  justify-items: end;
+}
+.pager-card small {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+.pager-card small .icon {
+  font-size: 1.05rem;
+}
+.pager-card b {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.pager-card.off {
+  background: transparent;
+  border-style: dashed;
+}
+.pager-card.off b {
+  color: var(--muted);
+  font-weight: 600;
+}
+.pager-card.off .soon {
+  margin-top: 2px;
+}
+a.pager-card:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  a.pager-card:hover {
+    background: var(--surface-2);
+  }
+}
+
+@media (max-width: 600px) {
+  .lede {
+    font-size: 1.12rem;
+  }
+  .prose th,
+  .prose td {
+    padding: 10px 12px;
+  }
+  .pager {
+    grid-template-columns: 1fr;
+  }
+  .pager-gap {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy:active,
+  a.pager-card:active {
+    transform: none;
+  }
+}

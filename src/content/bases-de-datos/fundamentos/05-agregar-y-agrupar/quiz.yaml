@@ -1,0 +1,119 @@
+leccion: bd-f-05
+preguntas:
+  - id: bd-f-05-q1
+    enunciado: >-
+      La tabla `clientes` tiene 50 filas y 3 de ellas tienen la ciudad a NULL. ¿Qué devuelve esta
+      consulta?
+    sql: SELECT COUNT(*) AS clientes, COUNT(ciudad) AS con_ciudad FROM clientes;
+    esperado:
+      columnas: [clientes, con_ciudad]
+      filas:
+        - [50, 47]
+      orden_importa: false
+    opciones:
+      - texto: 50 y 50
+        explicacion: >-
+          COUNT(*) sí cuenta las 50 filas, pero COUNT(ciudad) se salta las que tienen la ciudad a
+          NULL.
+      - texto: 50 y 47
+        correcta: true
+        explicacion: >-
+          COUNT(*) cuenta filas sin mirar su contenido; COUNT(ciudad) solo cuenta las filas en las
+          que la ciudad tiene valor.
+      - texto: 47 y 47
+        explicacion: >-
+          COUNT(*) no mira ninguna columna, así que los clientes sin ciudad también cuentan.
+      - texto: 50 y 3
+        explicacion: >-
+          COUNT(ciudad) cuenta los valores que existen, no los que faltan. Los 3 NULL son justo los
+          que deja fuera.
+
+  - id: bd-f-05-q2
+    enunciado: >-
+      Quieres las categorías que tienen más de 3 productos, con su número de productos. ¿Qué
+      consulta lo hace?
+    opciones:
+      - texto: '`SELECT categoria_id, COUNT(*) FROM productos WHERE COUNT(*) > 3 GROUP BY categoria_id;`'
+        explicacion: >-
+          Da error. WHERE se evalúa antes de formar los grupos, así que todavía no hay ningún
+          COUNT que comparar.
+      - texto: '`SELECT categoria_id, COUNT(*) FROM productos WHERE categoria_id > 3 GROUP BY categoria_id;`'
+        explicacion: >-
+          Filtra por el número de la categoría, no por cuántos productos tiene. Devuelve las
+          categorías con id mayor que 3, tengan los productos que tengan.
+      - texto: '`SELECT categoria_id, COUNT(*) FROM productos GROUP BY categoria_id HAVING COUNT(*) > 3;`'
+        correcta: true
+        explicacion: >-
+          HAVING filtra los grupos después de formarlos, así que puede usar el recuento de cada
+          categoría.
+
+  - id: bd-f-05-q3
+    enunciado: >-
+      Los clientes viven en 26 ciudades distintas y 3 no tienen ciudad. ¿Cuántas filas devuelve esta
+      consulta?
+    sql: SELECT ciudad, COUNT(*) AS clientes FROM clientes GROUP BY ciudad;
+    esperado:
+      columnas: [ciudad, clientes]
+      num_filas: 27
+      orden_importa: false
+    opciones:
+      - texto: '26'
+        explicacion: >-
+          Sería así si GROUP BY descartara los NULL, pero no los descarta: los reúne en un grupo
+          propio.
+      - texto: '29'
+        explicacion: >-
+          Los tres clientes sin ciudad no forman tres grupos. Para agrupar, todos los NULL cuentan
+          como el mismo valor.
+      - texto: '50'
+        explicacion: >-
+          GROUP BY devuelve una fila por grupo, no una por cliente.
+      - texto: '27'
+        correcta: true
+        explicacion: >-
+          Una fila por cada una de las 26 ciudades y otra más para el grupo de los clientes sin
+          ciudad.
+
+  - id: bd-f-05-q4
+    enunciado: >-
+      No hay ningún pago con fecha anterior a 2024. ¿Qué devuelve esta consulta en SQLite?
+    sql: SELECT SUM(importe) AS total FROM pagos WHERE fecha < '2024-01-01';
+    esperado:
+      columnas: [total]
+      filas:
+        - [null]
+      orden_importa: false
+    opciones:
+      - texto: Una fila con NULL.
+        correcta: true
+        explicacion: >-
+          SUM sobre ninguna fila devuelve NULL, tanto en SQLite como en PostgreSQL. Para obtener un
+          cero se escribe COALESCE(SUM(importe), 0).
+      - texto: Una fila con 0.
+        explicacion: >-
+          Es lo que parece lógico, pero SQL devuelve NULL. Solo COUNT devuelve 0 cuando no hay
+          filas.
+      - texto: Ninguna fila.
+        explicacion: >-
+          Una consulta con agregados y sin GROUP BY forma un único grupo con toda la tabla, y
+          devuelve una fila aunque ese grupo esté vacío.
+
+  - id: bd-f-05-q5
+    enunciado: >-
+      ¿Qué ocurre al ejecutar `SELECT categoria_id, nombre, COUNT(*) FROM productos GROUP BY
+      categoria_id;` en PostgreSQL?
+    opciones:
+      - texto: Devuelve una fila por producto, con el recuento de su categoría.
+        explicacion: >-
+          GROUP BY categoria_id deja una sola fila por categoría, no una por producto.
+      - texto: >-
+          Devuelve una fila por categoría y en nombre pone el del primer producto que se insertó.
+        explicacion: >-
+          Ningún motor promete eso. SQLite acepta la consulta, pero elige el nombre de una fila
+          cualquiera del grupo; PostgreSQL ni siquiera la ejecuta.
+      - texto: >-
+          Da error, porque nombre no está en el GROUP BY ni dentro de un agregado.
+        correcta: true
+        explicacion: >-
+          Cada categoría tiene varios nombres y la consulta no dice cuál mostrar. PostgreSQL la
+          rechaza; SQLite la admite como extensión, con un valor arbitrario.

@@ -1,0 +1,112 @@
+leccion: bd-f-04
+preguntas:
+  - id: bd-f-04-q1
+    enunciado: >-
+      Ejecutas `SELECT nombre FROM clientes;` varias veces seguidas y las filas siempre salen
+      ordenadas por id. ¿Qué puedes dar por hecho?
+    opciones:
+      - texto: Nada sobre el orden. Si lo necesitas, tienes que añadir ORDER BY.
+        correcta: true
+        explicacion: >-
+          Sin ORDER BY el orden no está definido. Que hoy salga ordenado es una casualidad del plan
+          de ejecución, no una garantía.
+      - texto: Que seguirán saliendo en ese orden, porque es el orden en que se insertaron.
+        explicacion: >-
+          El orden de inserción no obliga a nada. El motor puede leer las filas por un índice o de
+          otra forma y devolverlas en otro orden sin avisar.
+      - texto: Que saldrán ordenadas por la clave primaria, porque todas las tablas se guardan así.
+        explicacion: >-
+          Aunque algunas tablas se almacenen por su clave, la consulta no promete ese orden. Otro
+          plan de ejecución puede devolverlas de otra manera.
+
+  - id: bd-f-04-q2
+    enunciado: >-
+      La tabla `clientes` tiene 50 filas: 10 de Madrid y 3 con la ciudad a NULL. ¿Cuántas filas
+      devuelve esta consulta?
+    sql: SELECT nombre FROM clientes WHERE ciudad <> 'Madrid';
+    esperado:
+      columnas: [nombre]
+      num_filas: 37
+      orden_importa: false
+    opciones:
+      - texto: '40'
+        explicacion: >-
+          Sería así si NULL contara como «distinto de Madrid». Pero comparar NULL con cualquier
+          valor da desconocido, y WHERE descarta esas filas.
+      - texto: '37'
+        correcta: true
+        explicacion: >-
+          Quedan fuera los 10 de Madrid y también los 3 sin ciudad, porque para ellos la condición
+          no es verdadera sino desconocida. Para incluirlos habría que añadir OR ciudad IS NULL.
+      - texto: '50'
+        explicacion: >-
+          La condición sí filtra: los clientes de Madrid no la cumplen. Y los que no tienen ciudad
+          tampoco pasan el filtro.
+
+  - id: bd-f-04-q3
+    enunciado: '¿Qué hace `SELECT DISTINCT ciudad, nombre FROM clientes;`?'
+    opciones:
+      - texto: Devuelve una fila por ciudad, con uno cualquiera de sus clientes.
+        explicacion: >-
+          DISTINCT no agrupa por la primera columna. Para una fila por ciudad hace falta agrupar,
+          que se ve en la lección de agregar y agrupar.
+      - texto: Quita las ciudades repetidas y deja todos los nombres.
+        explicacion: >-
+          Eso no se puede expresar así: cada fila del resultado tiene una ciudad y un nombre, y
+          DISTINCT decide sobre la pareja, no sobre cada columna por separado.
+      - texto: Da error, porque DISTINCT solo admite una columna.
+        explicacion: DISTINCT funciona con cualquier número de columnas; se aplica a todas a la vez.
+      - texto: Quita las filas en las que se repite la pareja ciudad y nombre.
+        correcta: true
+        explicacion: >-
+          DISTINCT compara la fila completa. Dos clientes de la misma ciudad con nombres distintos
+          siguen siendo dos filas.
+
+  - id: bd-f-04-q4
+    enunciado: >-
+      En `productos` hay dos artículos a 45 euros, uno a 49 y otro a 59,90, y ninguno más con un
+      precio entre esas cifras. ¿Qué devuelve esta consulta?
+    sql: >-
+      SELECT nombre, precio FROM productos WHERE precio BETWEEN 45 AND 59.9 ORDER BY precio, nombre;
+    esperado:
+      columnas: [nombre, precio]
+      filas:
+        - ['Patrones de arquitectura', 45]
+        - ['Ratón vertical', 45]
+        - ['Webcam HD', 49]
+        - ['Ratón para juegos', 59.9]
+      orden_importa: true
+    opciones:
+      - texto: Los cuatro productos, porque BETWEEN incluye los dos extremos.
+        correcta: true
+        explicacion: >-
+          BETWEEN a AND b equivale a >= a AND <= b. Los productos de 45 y de 59,90 entran.
+      - texto: Solo el de 49 euros, porque BETWEEN excluye los extremos.
+        explicacion: BETWEEN no excluye nada de los extremos; los incluye los dos.
+      - texto: Los de 45 y el de 49, porque BETWEEN incluye el primer extremo pero no el segundo.
+        explicacion: >-
+          Eso describe un rango semiabierto, que se escribe con >= y <. BETWEEN es cerrado por
+          ambos lados.
+
+  - id: bd-f-04-q5
+    enunciado: >-
+      Una pantalla pagina los pedidos con `ORDER BY fecha DESC LIMIT 20 OFFSET 20`. A veces un
+      pedido sale en dos páginas y otro no sale en ninguna. ¿Cuál es la causa más probable?
+    opciones:
+      - texto: >-
+          OFFSET no es fiable: entre una ejecución y otra puede saltarse un número de filas distinto
+          del que se le pide.
+        explicacion: >-
+          OFFSET se salta siempre las filas que se le piden. El problema está en que el orden de
+          esas filas cambia de una ejecución a otra.
+      - texto: >-
+          LIMIT se aplica antes que ORDER BY, así que cada página ordena un trozo distinto de filas
+          ya recortadas.
+        explicacion: >-
+          Es al revés: en el orden lógico de la consulta, ORDER BY va antes que LIMIT y OFFSET.
+      - texto: Hay pedidos con la misma fecha y entre ellos el orden no está definido.
+        correcta: true
+        explicacion: >-
+          Con empates, cada ejecución puede colocar esas filas de forma distinta y el corte de la
+          página cae en sitios diferentes. Se arregla desempatando, por ejemplo con
+          ORDER BY fecha DESC, id DESC.

@@ -1,0 +1,202 @@
+/* SQL playground. Global (not scoped) because the Preact island renders this markup. */
+.pg-head h1 {
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin: 0 0 12px;
+  font-weight: 800;
+}
+.pg-head p {
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: 60ch;
+  margin: 0 0 28px;
+}
+
+.pg {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 32px;
+  align-items: start;
+}
+.pg-main {
+  min-width: 0;
+}
+
+/* ---------- editor ---------- */
+.pg-label {
+  display: block;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.pg-sql {
+  display: block;
+  width: 100%;
+  min-height: 12rem;
+  resize: vertical;
+  padding: 18px;
+  border: 0;
+  border-radius: var(--r-card);
+  background: var(--code-bg);
+  color: var(--code-text);
+  caret-color: var(--accent-bright);
+  /* 1rem, not less: iOS zooms the page into any field under 16px. */
+  font:
+    400 1rem/1.7 var(--mono),
+    monospace;
+  tab-size: 2;
+}
+.pg-acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 14px 0 0;
+}
+.pg-atajo {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.pg-atajo kbd {
+  font: 600 0.8rem var(--mono);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 1px 6px;
+  background: var(--surface);
+  color: var(--text);
+}
+.pg-reiniciar {
+  margin-left: auto;
+}
+/* aria-disabled instead of disabled, so the button keeps focus while the page is busy. */
+.pg-acciones [aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ---------- estado y resultado ---------- */
+.pg-estado {
+  margin: 22px 0 12px;
+  font-weight: 600;
+  min-height: 1.65em;
+}
+.pg-estado.is-bad {
+  color: var(--bad);
+}
+.pg-detalle {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--r-btn);
+  background: var(--bad-bg);
+  color: var(--text);
+  font-size: 0.92rem;
+}
+.pg-detalle code {
+  font-family: var(--mono);
+}
+.pg-tabla {
+  overflow-x: auto;
+  max-height: 32rem;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.pg-tabla table {
+  border-collapse: collapse;
+  min-width: 100%;
+  font-size: 0.95rem;
+}
+.pg-tabla th,
+.pg-tabla td {
+  padding: 9px 16px;
+  text-align: left;
+  border-top: 1px solid var(--line);
+  white-space: nowrap;
+}
+.pg-tabla th {
+  position: sticky;
+  top: 0;
+  font: 600 0.84rem/1.2 var(--mono);
+  color: var(--muted);
+  background: var(--surface-2);
+  border-top: 0;
+}
+.pg-tabla th.is-num {
+  text-align: right;
+}
+.pg-tabla td.is-num {
+  font-family: var(--mono);
+  text-align: right;
+}
+.pg-tabla td.is-null {
+  font-family: var(--mono);
+  color: var(--muted);
+  font-style: italic;
+}
+.pg-vacio {
+  margin: 0;
+  padding: 12px 16px;
+  color: var(--muted);
+}
+
+/* ---------- tablas de la base ---------- */
+.pg-esquema {
+  position: sticky;
+  top: 88px;
+}
+.pg-esquema ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pg-esquema > ul > li + li {
+  border-top: 1px solid var(--line);
+}
+.pg-esquema summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 0;
+  cursor: pointer;
+}
+.pg-esquema code {
+  font: 600 0.92rem var(--mono);
+}
+.pg-ncol,
+.pg-tipo {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.pg-ncol {
+  margin-left: auto;
+}
+.pg-esquema .pg-columnas {
+  padding: 0 0 12px 18px;
+}
+.pg-columnas li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+}
+.pg-columnas code {
+  font-weight: 400;
+}
+
+@media (max-width: 860px) {
+  .pg {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pg-esquema {
+    position: static;
+  }
+}
+@media (max-width: 600px) {
+  .pg-reiniciar {
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,60 @@
+# Resultados esperados de los bloques SQL de la lección, obtenidos ejecutándolos contra tienda.sql.
+q1:
+  columnas: ['productos', 'mas_barato', 'mas_caro', 'precio_medio']
+  filas:
+    - [40, 12.9, 1499, 140.03]
+  orden_importa: false
+q2:
+  columnas: ['resenas', 'con_texto', 'productos_resenados']
+  filas:
+    - [120, 90, 30]
+  orden_importa: false
+q3:
+  columnas: ['pagos', 'total', 'total_o_cero']
+  filas:
+    - [0, null, 0]
+  orden_importa: false
+q4:
+  columnas: ['estado', 'pedidos']
+  filas:
+    - ['entregado', 220]
+    - ['pendiente', 40]
+    - ['enviado', 16]
+    - ['cancelado', 15]
+    - ['pagado', 9]
+  orden_importa: true
+q5:
+  columnas: ['metodo', 'pagos', 'total']
+  filas:
+    - ['tarjeta', 63, 90476.91]
+    - ['bizum', 95, 50697.15]
+    - ['transferencia', 95, 49915.8]
+  orden_importa: true
+q6:
+  columnas: ['ciudad', 'clientes', 'con_ciudad']
+  filas:
+    - ['Madrid', 10, 10]
+    - ['Barcelona', 5, 5]
+    - ['Sevilla', 4, 4]
+    - ['Valencia', 4, 4]
+    - [null, 3, 0]
+  orden_importa: true
+q7:
+  columnas: ['producto_id', 'resenas', 'nota_media']
+  filas:
+    - [22, 4, 4.25]
+    - [2, 5, 4.2]
+    - [27, 5, 4.2]
+    - [7, 4, 4]
+  orden_importa: true
+q8:
+  columnas: ['producto_id', 'resenas_buenas']
+  filas:
+    - [2, 4]
+    - [27, 4]
+    - [6, 3]
+    - [7, 3]
+    - [11, 3]
+    - [16, 3]
+    - [22, 3]
+  orden_importa: true

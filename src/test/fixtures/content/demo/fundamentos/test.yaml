@@ -1,0 +1,28 @@
+preguntas:
+  - id: dm-f-t01
+    leccion: dm-f-01
+    enunciado: ¿Cuál es el producto más caro?
+    sql: SELECT nombre FROM productos ORDER BY precio DESC LIMIT 1;
+    esperado:
+      columnas: [nombre]
+      filas: [['Mochila']]
+      orden_importa: true
+    opciones:
+      - texto: Mochila.
+        correcta: true
+        explicacion: Cuesta 25.
+      - texto: Lápiz.
+        explicacion: Es el más barato.
+      - texto: Cuaderno.
+        explicacion: Cuesta 3.
+  - id: dm-f-t02
+    leccion: dm-f-01
+    enunciado: ¿Qué hace un filtro WHERE?
+    opciones:
+      - texto: Deja solo las filas que cumplen la condición.
+        correcta: true
+        explicacion: Filtra filas antes de devolverlas.
+      - texto: Ordena el resultado.
+        explicacion: Eso es ORDER BY.
+      - texto: Agrupa filas.
+        explicacion: Eso es GROUP BY.

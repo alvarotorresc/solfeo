@@ -1,0 +1,6 @@
+q1:
+  columnas: [nombre]
+  filas:
+    - ['Cuaderno']
+    - ['Mochila']
+  orden_importa: false

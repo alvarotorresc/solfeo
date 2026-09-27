@@ -1,0 +1,10 @@
+- id: dm-f-par-01
+  concepto: WHERE
+  definicion: Filtra las filas que cumplen una condición.
+  leccion: dm-f-01
+  nivel: fundamentos
+- id: dm-i-par-01
+  concepto: Otra
+  definicion: Un par del nivel intermedio.
+  leccion: dm-i-01
+  nivel: intermedio

@@ -1,0 +1,43 @@
+leccion: dm-f-01
+preguntas:
+  - id: dm-f-01-q1
+    enunciado: ¿Cuántos productos quedan después de borrarlos todos?
+    sql: DELETE FROM productos; SELECT count(*) AS n FROM productos;
+    esperado:
+      columnas: [n]
+      filas: [[0]]
+      orden_importa: true
+      muta: true
+    opciones:
+      - texto: Ninguno.
+        correcta: true
+        explicacion: El borrado sin WHERE afecta a todas las filas.
+      - texto: Uno.
+        explicacion: No queda ninguno.
+      - texto: Tres.
+        explicacion: Eso había antes de borrar.
+  - id: dm-f-01-q2
+    enunciado: ¿Cuántos productos tiene la tienda?
+    sql: SELECT count(*) AS n FROM productos;
+    esperado:
+      columnas: [n]
+      filas: [[3]]
+      orden_importa: true
+    opciones:
+      - texto: Tres.
+        correcta: true
+        explicacion: La semilla tiene tres productos.
+      - texto: Dos.
+        explicacion: Falta uno.
+      - texto: Cero.
+        explicacion: El borrado de la pregunta anterior se hizo sobre una copia.
+  - id: dm-f-01-q3
+    enunciado: ¿Qué columna identifica cada producto?
+    opciones:
+      - texto: id
+        correcta: true
+        explicacion: Es la clave primaria.
+      - texto: nombre
+        explicacion: Podría repetirse.
+      - texto: precio
+        explicacion: Muchos productos pueden costar lo mismo.

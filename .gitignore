@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+.netlify/
+
+# Tests
+coverage/
+.vitest/
+
+# Environment
+.env*
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/

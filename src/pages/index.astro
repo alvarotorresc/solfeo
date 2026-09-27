@@ -1,0 +1,265 @@
+---
+import { getCollection } from 'astro:content';
+import { NIVELES, type Nivel } from '../content/schemas';
+import { contarLecciones, rutaDelTest } from '../features/test/logic/test';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { NOMBRE_NIVEL, caminoDelModulo, type CaminoDelModulo } from '../lib/camino';
+import { bancoDelNivel } from '../lib/content/banco-del-nivel';
+import { esPublicable, soloRevisado } from '../lib/content/publicables';
+import '../styles/camino.css';
+
+const filtrar = soloRevisado(process.env);
+const modulos = (await getCollection('modulos'))
+  .map((m) => m.data)
+  .sort((a, b) => a.orden - b.orden);
+const temarios = await getCollection('temarios');
+const publicadas = new Set(
+  (await getCollection('lecciones', (l) => esPublicable(l.data.estado, filtrar))).map((l) => l.id),
+);
+
+const caminos = new Map<string, CaminoDelModulo>(
+  temarios.map((t) => [t.data.modulo, caminoDelModulo(t.data, publicadas)]),
+);
+
+// The module learners are on: the first one available. The page shows its lessons and progress.
+const activo = modulos.find((m) => m.disponible && caminos.has(m.id));
+const caminoActivo = activo ? caminos.get(activo.id) : undefined;
+const primera = caminoActivo?.fundamentos.find((l) => l.href);
+
+// Test bank of each level of the active module, limited to published lessons. Only levels with
+// questions link to their test.
+const tests = await getCollection('tests');
+const temarioActivo = temarios.find((t) => t.data.modulo === activo?.id);
+const bancoDe = (nivel: Nivel) =>
+  temarioActivo && caminoActivo
+    ? bancoDelNivel(tests, temarioActivo.id, nivel, caminoActivo[nivel])
+    : [];
+---
+
+<BaseLayout
+  view="camino"
+  description="Teoría de la ingeniería de software, módulo a módulo y en español."
+>
+  <div class="home">
+    <div class="hero">
+      <h1>
+        El <mark>solfeo</mark> del software
+      </h1>
+      <p>
+        La teoría que se estudia aparte de tocar: diez módulos en orden, lecciones cortas y un quiz
+        en cada una.
+      </p>
+      <a class="btn btn-primary" id="continueBtn" href={primera?.href ?? '/'} hidden={!primera}>
+        <span id="continueLabel">Empezar por «{primera?.titulo}»</span>
+        <span class="icon" aria-hidden="true">
+          arrow_forward
+        </span>
+      </a>
+      <p class="hint" id="continueDone" hidden>
+        Has hecho todas las lecciones publicadas de este nivel. Llegan más pronto.
+      </p>
+    </div>
+
+    <aside class="aside" aria-label="Nivel y progreso">
+      <div class="panel">
+        <fieldset class="seg" id="levelSeg">
+          <legend class="sr">Nivel</legend>
+          <span class="seg-thumb" aria-hidden="true"></span>
+          {NIVELES.map((nivel) => (
+            <label>
+              <input type="radio" name="nivel" value={nivel} checked={nivel === 'fundamentos'} />
+              <span>{NOMBRE_NIVEL[nivel]}</span>
+            </label>
+          ))}
+        </fieldset>
+        <p class="hint">Cámbialo cuando quieras. Ningún nivel bloquea a otro.</p>
+      </div>
+
+      <div class="panel">
+        <div class="prog" aria-live="polite">
+          <div class="ring" id="ring">
+            <span id="ringNum">0</span>
+          </div>
+          <div>
+            <strong id="progTitle">Aún sin empezar</strong>
+            <small id="progSub">
+              {activo?.titulo}, nivel {NOMBRE_NIVEL.fundamentos}
+            </small>
+          </div>
+        </div>
+        <div class="reset">
+          <small class="hint" id="storageHint">
+            Se guarda en este navegador.
+          </small>
+          <button class="linkbtn" id="resetBtn" type="button">
+            <span class="icon" aria-hidden="true">
+              restart_alt
+            </span>
+            Borrar progreso
+          </button>
+          <button class="linkbtn danger" id="resetConfirm" type="button" hidden>
+            Sí, borrarlo
+          </button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Para practicar</h2>
+        <ul class="tools">
+          <li>
+            <a href="/juego">
+              <span class="ti">
+                <span class="icon" aria-hidden="true">
+                  extension
+                </span>
+              </span>
+              <span>
+                <b>Emparejar conceptos</b>
+                <small>Une cada término con su definición.</small>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="/playground">
+              <span class="ti">
+                <span class="icon" aria-hidden="true">
+                  table_view
+                </span>
+              </span>
+              <span>
+                <b>Playground de SQL</b>
+                <small>Una tienda de ejemplo para lanzar consultas.</small>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="/simulador">
+              <span class="ti">
+                <span class="icon" aria-hidden="true">
+                  forum
+                </span>
+              </span>
+              <span>
+                <b>Simulador de entrevista</b>
+                <small>Casos abiertos con repreguntas y rúbrica.</small>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="pathwrap">
+      <h2 class="sr">El camino</h2>
+      <ol class="path">
+        {modulos.map((modulo) => {
+          const camino = modulo === activo ? caminoActivo : undefined;
+          if (!camino) {
+            return (
+              <li class="stop off">
+                <span class="node" aria-hidden="true">
+                  {modulo.orden}
+                </span>
+                <h3>
+                  <span class="num">Módulo {modulo.orden}</span>
+                  {modulo.titulo}
+                </h3>
+                <span class="soon">
+                  <span class="icon" aria-hidden="true">
+                    schedule
+                  </span>
+                  No disponible todavía
+                </span>
+              </li>
+            );
+          }
+          return (
+            <li class="stop live" id="moduloActivo" data-titulo={modulo.titulo}>
+              <span class="node" data-n={modulo.orden} aria-hidden="true" />
+              <div class="live-card">
+                <header>
+                  <h3>
+                    <span class="num">Módulo {modulo.orden}</span>
+                    <br />
+                    {modulo.titulo}
+                  </h3>
+                  {NIVELES.map((nivel) => (
+                    <span class="chip por-nivel" data-nivel={nivel}>
+                      {NOMBRE_NIVEL[nivel]}
+                    </span>
+                  ))}
+                </header>
+                {NIVELES.map((nivel) => {
+                  const banco = bancoDe(nivel);
+                  const numLecciones =
+                    banco.length > 0 ? contarLecciones(banco) : camino[nivel].length;
+                  const filaDelTest = (
+                    <>
+                      <span class="dot" aria-hidden="true">
+                        <span class="icon">task_alt</span>
+                      </span>
+                      <span class="t">
+                        Test del módulo
+                        <small>
+                          {numLecciones === 1
+                            ? 'Preguntas de una lección del nivel'
+                            : `Preguntas que mezclan ${numLecciones} lecciones`}
+                        </small>
+                      </span>
+                      <span class="state">{banco.length > 0 ? '' : 'Próximamente'}</span>
+                    </>
+                  );
+                  return (
+                    <ol
+                      class="lessons por-nivel"
+                      data-nivel={nivel}
+                      aria-label={`Lecciones de ${NOMBRE_NIVEL[nivel]}`}
+                    >
+                      {camino[nivel].map((leccion) => {
+                        const contenido = (
+                          <>
+                            <span class="dot" aria-hidden="true">
+                              <span class="n">{leccion.orden}</span>
+                              <span class="icon fill">check</span>
+                            </span>
+                            <span class="t">{leccion.titulo}</span>
+                            <span class="state">{leccion.href ? '' : 'Próximamente'}</span>
+                          </>
+                        );
+                        return (
+                          <li
+                            class:list={['lesson', { off: !leccion.href }]}
+                            data-id={leccion.id}
+                            data-href={leccion.href}
+                            data-titulo={leccion.titulo}
+                          >
+                            {leccion.href ? (
+                              <a href={leccion.href}>{contenido}</a>
+                            ) : (
+                              <span class="row">{contenido}</span>
+                            )}
+                          </li>
+                        );
+                      })}
+                      {/* No data-id: the path script only counts lessons, so the test never adds to progress. */}
+                      <li class:list={['lesson test', { off: banco.length === 0 }]}>
+                        {banco.length > 0 ? (
+                          <a href={rutaDelTest(modulo.id, nivel)}>{filaDelTest}</a>
+                        ) : (
+                          <span class="row">{filaDelTest}</span>
+                        )}
+                      </li>
+                    </ol>
+                  );
+                })}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  </div>
+  <script>
+    import '../scripts/camino';
+  </script>
+</BaseLayout>

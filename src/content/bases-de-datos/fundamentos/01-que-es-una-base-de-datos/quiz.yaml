@@ -1,0 +1,111 @@
+leccion: bd-f-01
+preguntas:
+  - id: bd-f-01-q1
+    enunciado: >-
+      Una aplicación guarda el carrito de cada usuario en una variable del servidor. Tras un
+      reinicio, todos los carritos aparecen vacíos. ¿Qué le falta a esos datos?
+    opciones:
+      - texto: Un índice que permita encontrar cada carrito más rápido.
+        explicacion: >-
+          Un índice acelera las búsquedas, pero no hace que los datos sobrevivan a un reinicio. El
+          problema no es la velocidad.
+      - texto: Persistencia, porque solo existían en la memoria del proceso.
+        correcta: true
+        explicacion: >-
+          La memoria del proceso se pierde al terminar. Para que los carritos sobrevivan tienen que
+          acabar en un almacenamiento duradero, normalmente a través de una base de datos.
+      - texto: Un esquema que fije qué campos tiene cada carrito.
+        explicacion: >-
+          El esquema describe la forma de los datos, pero unos datos con forma impecable se pierden
+          igual si solo viven en memoria.
+
+  - id: bd-f-01-q2
+    enunciado: >-
+      En una reunión alguien dice: «Nuestra base de datos es PostgreSQL». Hablando con precisión,
+      ¿qué es PostgreSQL?
+    opciones:
+      - texto: El sistema gestor que guarda, protege y consulta los datos.
+        correcta: true
+        explicacion: >-
+          PostgreSQL es un SGBD: el programa. La base de datos son los datos que ese programa
+          gestiona.
+      - texto: El conjunto de tablas con los datos de la empresa.
+        explicacion: >-
+          Eso es la base de datos. PostgreSQL es el software que la gestiona; los mismos datos
+          podrían vivir en otro gestor.
+      - texto: El lenguaje con el que se escriben las consultas.
+        explicacion: >-
+          El lenguaje es SQL, que entienden muchos gestores distintos. PostgreSQL es uno de ellos.
+      - texto: El formato de archivo en el que se guardan las tablas en disco.
+        explicacion: >-
+          El formato en disco es un detalle interno del gestor, pensado para que tú no tengas que
+          conocerlo.
+
+  - id: bd-f-01-q3
+    enunciado: >-
+      Una aplicación de escritorio necesita guardar sus datos en local, sin instalar ni administrar
+      nada aparte. ¿Por qué suele elegirse SQLite en ese caso?
+    opciones:
+      - texto: >-
+          Porque no admite SQL y, al no tener que interpretar consultas, ocupa menos espacio en
+          disco.
+        explicacion: >-
+          SQLite sí es un gestor SQL completo, con tablas, índices y consultas. Lo que no tiene es
+          un proceso servidor aparte.
+      - texto: Porque guarda los datos en memoria y así evita escribir en disco.
+        explicacion: >-
+          SQLite lee y escribe en un archivo del disco; los datos sobreviven al cierre de la
+          aplicación.
+      - texto: >-
+          Porque va dentro de la aplicación como una biblioteca y guarda toda la base en un único
+          archivo.
+        correcta: true
+        explicacion: >-
+          SQLite no necesita un servidor: la aplicación lo lleva dentro y trabaja sobre un archivo
+          en disco. Por eso no hay nada que instalar ni que administrar.
+
+  - id: bd-f-01-q4
+    enunciado: >-
+      Una web guarda las sesiones de sus usuarios. Siempre las busca por su identificador de sesión
+      y nunca por su contenido. ¿Qué familia de bases de datos encaja de forma más natural?
+    opciones:
+      - texto: Documental, porque cada sesión podría tener campos distintos.
+        explicacion: >-
+          Podría funcionar, pero su ventaja está en consultar dentro de documentos con estructura.
+          Aquí nunca se consulta el contenido: solo se lee por identificador.
+      - texto: Relacional, porque es la única que garantiza que los datos se guarden en disco.
+        explicacion: >-
+          Guardar en disco no es exclusivo de las relacionales; cualquier familia puede ofrecer
+          persistencia.
+      - texto: >-
+          De grafos, porque cada sesión está relacionada con un usuario.
+        explicacion: >-
+          Los grafos brillan cuando lo importante son las relaciones entre muchos elementos. Una
+          sesión que se lee por su identificador no las necesita.
+      - texto: Clave-valor, porque todo el acceso es guardar y leer por una clave.
+        correcta: true
+        explicacion: >-
+          Si siempre conoces la clave de lo que buscas y el valor no se consulta por dentro, el
+          modelo clave-valor es el más directo.
+
+  - id: bd-f-01-q5
+    enunciado: >-
+      Un equipo guarda sus pedidos en un archivo CSV que escriben varios procesos a la vez. De vez
+      en cuando aparecen pedidos perdidos o líneas cortadas por la mitad. ¿Qué explica mejor el
+      problema?
+    opciones:
+      - texto: El formato CSV no admite textos con tildes y corrompe algunas líneas.
+        explicacion: >-
+          CSV puede guardar cualquier texto con la codificación adecuada. Los síntomas apuntan a
+          escrituras simultáneas, no al contenido.
+      - texto: >-
+          Nadie coordina las escrituras simultáneas ni protege una escritura que se corta a medias,
+          y eso es justo lo que resuelve un SGBD.
+        correcta: true
+        explicacion: >-
+          Con un archivo suelto, dos procesos pueden pisarse y un fallo a mitad de escritura deja el
+          archivo roto. Un gestor controla el acceso concurrente y se recupera de esos fallos.
+      - texto: Los pedidos deberían guardarse en varios archivos, uno por proceso.
+        explicacion: >-
+          Separar archivos evita pisarse, pero deja sin resolver los fallos a mitad de escritura y
+          obliga a juntar los archivos para cualquier consulta.

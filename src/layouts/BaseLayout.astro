@@ -1,0 +1,78 @@
+---
+import textFont from '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2?url';
+import iconFont from '../styles/fonts/material-symbols-rounded.woff2?url';
+import { isCurrentPath } from '../lib/navigation';
+import { buildPageTitle } from '../lib/page-title';
+import { SCRIPT_TEMA_INICIAL } from '../lib/tema-inicial';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description: string;
+  /** Page kind, used by styles that only apply to some pages (the reading bar on lessons). */
+  view?: 'camino' | 'leccion' | 'otra';
+}
+
+const { title, description, view = 'otra' } = Astro.props;
+
+const navLinks = [
+  { href: '/', label: 'Camino' },
+  { href: '/playground', label: 'Playground' },
+  { href: '/simulador', label: 'Simulador' },
+  { href: '/juego', label: 'Juego' },
+];
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{buildPageTitle(title)}</title>
+    <link rel="preload" href={textFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={iconFont} as="font" type="font/woff2" crossorigin />
+    <!-- Theme and level before the first paint; its hash is added to the CSP in astro.config. -->
+    <script is:inline set:html={SCRIPT_TEMA_INICIAL} />
+  </head>
+  <body data-view={view}>
+    <div class="readbar" aria-hidden="true"></div>
+    <header class="top">
+      <div class="top-in">
+        <a class="brand" href="/" aria-label="Solfeo, ir al camino">
+          Sol<b>fe</b>o
+        </a>
+        <nav class="tabs" aria-label="Principal">
+          {navLinks.map((link) => (
+            <a
+              href={link.href}
+              aria-current={isCurrentPath(Astro.url.pathname, link.href) ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+        <button class="theme-btn" id="themeBtn" type="button" aria-label="Cambiar el tema">
+          <span class="icon to-dark" aria-hidden="true">
+            dark_mode
+          </span>
+          <span class="icon to-light" aria-hidden="true">
+            light_mode
+          </span>
+        </button>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="foot">
+      Solfeo. Teoría de la ingeniería de software, en español y con licencia AGPL.
+    </footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script>
+      import '../scripts/tema';
+    </script>
+  </body>
+</html>

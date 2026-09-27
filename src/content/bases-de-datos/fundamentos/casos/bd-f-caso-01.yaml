@@ -1,0 +1,114 @@
+id: bd-f-caso-01
+modulo: bases-de-datos
+nivel: fundamentos
+titulo: El informe de gasto por cliente no cuadra
+escenario: >-
+  Marketing quiere un listado con lo que ha gastado cada cliente de la tienda para preparar una
+  campaña. El informe actual une clientes, pedidos, líneas de pedido y pagos, y suma la cantidad
+  por el precio de cada línea. Hay dos quejas: en la tienda hay 50 clientes y el listado solo
+  muestra 45, y algunos clientes que pagaron a plazos aparecen con más gasto del que tuvieron.
+pregunta: >-
+  ¿Cómo investigarías las dos quejas y cómo reescribirías la consulta para que el listado sea
+  correcto? Explica qué comprobarías antes de tocar nada.
+repreguntas:
+  - >-
+    Resulta que algunos pedidos están cancelados y no deberían contar. ¿Dónde pondrías esa
+    condición para no volver a perder a los clientes sin pedidos, y por qué importa el sitio?
+  - >-
+    Finanzas quiere, además, una columna con lo pagado por cada cliente. ¿Cómo la calcularías sin
+    que vuelvan a inflarse los importes?
+respuesta_modelo: |
+  Empezaría por separar las dos quejas, porque tienen causas distintas.
+
+  **Faltan clientes.** Si el listado une `clientes` con `pedidos` mediante un `JOIN` normal
+  (interno), solo sobreviven los clientes que tienen al menos un pedido. Lo comprobaría contando
+  los clientes que no aparecen en `pedidos`: son exactamente los cinco que faltan. La solución es
+  partir de `clientes` y usar `LEFT JOIN`, de modo que un cliente sin pedidos siga en el resultado
+  con las columnas de pedido a `NULL`. Después, al sumar, esos clientes tendrían `NULL` como gasto;
+  para marketing es más útil ver un cero, así que convertiría el `NULL` en 0 al final.
+
+  **Importes inflados.** Cada vez que se une una tabla, cada fila de un lado se repite por cada
+  fila que le corresponde en el otro. Un pedido pagado en dos plazos tiene dos filas en `pagos`,
+  así que todas sus líneas se duplican antes de sumar y su gasto sale doble. Lo comprobaría con
+  un pedido concreto: contaría sus líneas, sus pagos y las filas que produce la unión, y vería
+  que son líneas × pagos. Como el gasto solo depende de las líneas, la tabla `pagos` sobra en esta
+  consulta. La regla general es no unir en la misma consulta dos tablas «hijas» independientes
+  del mismo padre si luego vas a sumar.
+
+  **Totales que se quedan cortos.** Hay un tercer efecto que nadie ha notado todavía. Como la
+  unión con `pagos` también es interna, los pedidos que aún no tienen pago (los pendientes)
+  desaparecen, y el gasto de muchos clientes sale más bajo de lo real. Si esos pedidos deben contar
+  es una pregunta de negocio que haría a marketing; en cualquier caso, `pagos` no pinta nada en el
+  cálculo del gasto.
+
+  La consulta quedaría así, agrupando por cliente:
+
+  ```sql
+  SELECT c.id, c.nombre, round(coalesce(sum(l.cantidad * l.precio_unitario), 0), 2) AS gastado
+  FROM clientes AS c
+  LEFT JOIN pedidos AS p ON p.cliente_id = c.id AND p.estado <> 'cancelado'
+  LEFT JOIN lineas_pedido AS l ON l.pedido_id = p.id
+  GROUP BY c.id, c.nombre
+  ORDER BY gastado, c.id;
+  ```
+
+  Antes de darla por buena comprobaría dos cosas: que salen 50 filas, una por cliente, y que la
+  suma de toda la columna coincide con la suma directa sobre `lineas_pedido` de los pedidos no
+  cancelados.
+
+  **Pedidos cancelados.** La condición va en el `ON` del `LEFT JOIN`, no en el `WHERE`. En el
+  `WHERE`, las filas de los clientes sin pedidos tienen `estado` a `NULL`, la comparación da
+  desconocido y esos clientes vuelven a desaparecer: el `LEFT JOIN` se convierte, en la práctica,
+  en un `JOIN` interno. En el `ON`, la condición solo decide qué pedidos se emparejan y el cliente
+  se conserva aunque no quede ninguno.
+
+  **Lo pagado.** Lo calcularía por separado: primero la suma de `pagos` agrupada por cliente, en
+  una subconsulta, y después la uniría a la lista de clientes, igual que el gasto. Cada agregado
+  se hace a su nivel y se une ya resumido, así ninguna fila se multiplica.
+rubrica:
+  - id: p1
+    punto: Identifica que el JOIN interno descarta a los clientes sin pedidos y propone LEFT JOIN.
+    lecciones: [bd-f-06]
+  - id: p2
+    punto: >-
+      Explica que unir líneas y pagos del mismo pedido multiplica las filas y por eso se infla la
+      suma.
+    lecciones: [bd-f-06, bd-f-05]
+  - id: p3
+    punto: Propone comprobar las hipótesis con recuentos antes de cambiar la consulta.
+    lecciones: [bd-f-04, bd-f-05]
+  - id: p4
+    punto: Agrupa por cliente y calcula el gasto solo a partir de las líneas de pedido.
+    lecciones: [bd-f-05]
+  - id: p5
+    punto: >-
+      Pone el filtro de cancelados en el ON y explica por qué en el WHERE vuelve a perder
+      clientes.
+    lecciones: [bd-f-06, bd-f-04]
+  - id: p6
+    punto: Trata el NULL de los clientes sin pedidos para mostrarlo como cero.
+    lecciones: [bd-f-04]
+  - id: p7
+    punto: >-
+      Se da cuenta de que el JOIN interno con pagos también descarta los pedidos sin pago y
+      pregunta si deben contar.
+    lecciones: [bd-f-06]
+sql: |-
+  SELECT c.id, c.nombre, round(coalesce(sum(l.cantidad * l.precio_unitario), 0), 2) AS gastado
+  FROM clientes AS c
+  LEFT JOIN pedidos AS p ON p.cliente_id = c.id AND p.estado <> 'cancelado'
+  LEFT JOIN lineas_pedido AS l ON l.pedido_id = p.id
+  GROUP BY c.id, c.nombre
+  ORDER BY gastado, c.id
+  LIMIT 7;
+esperado:
+  columnas: [id, nombre, gastado]
+  filas:
+    - [46, 'Tomás Campos', 0]
+    - [47, 'Julia Vega', 0]
+    - [48, 'Nicolás Fuentes', 0]
+    - [49, 'Olga Carrasco', 0]
+    - [50, 'Rafael Diez', 0]
+    - [44, 'Gonzalo Flores', 2288.3]
+    - [12, 'Andrés Torres', 2604]
+  orden_importa: true

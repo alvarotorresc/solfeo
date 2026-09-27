@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import { NIVELES } from '../../../content/schemas';
+import Test, { type PreguntaDeTest } from '../../../features/test/Test';
+import type { LeccionDelTest } from '../../../features/test/logic/test';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { NOMBRE_NIVEL, caminoDelModulo } from '../../../lib/camino';
+import { bancoDelNivel } from '../../../lib/content/banco-del-nivel';
+import { esPublicable, soloRevisado } from '../../../lib/content/publicables';
+import { resaltarSql } from '../../../lib/content/resaltar-sql';
+import '../../../styles/leccion.css';
+import '../../../styles/prism.css';
+import '../../../styles/quiz.css';
+import '../../../styles/test.css';
+
+// One page per module and level, with or without a question bank: without one it shows an
+// empty state, so the route exists before the content does.
+export async function getStaticPaths() {
+  const filtrar = soloRevisado(process.env);
+  const publicadas = new Set(
+    (await getCollection('lecciones', (l) => esPublicable(l.data.estado, filtrar))).map(
+      (l) => l.id,
+    ),
+  );
+  const modulos = await getCollection('modulos');
+  const temarios = await getCollection('temarios');
+  const tests = await getCollection('tests');
+  return temarios.flatMap((temario) => {
+    const modulo = modulos.find((m) => m.data.id === temario.data.modulo);
+    if (!modulo) throw new Error(`Falta el módulo ${temario.data.modulo}`);
+    const camino = caminoDelModulo(temario.data, publicadas);
+    return NIVELES.map((nivel) => {
+      const lecciones = camino[nivel].map(({ id, titulo, href }): LeccionDelTest => ({
+        id,
+        titulo,
+        href,
+      }));
+      return {
+        params: { modulo: temario.data.modulo, nivel },
+        props: {
+          tituloModulo: modulo.data.titulo,
+          nivel,
+          lecciones,
+          banco: bancoDelNivel(tests, temario.id, nivel, lecciones),
+        },
+      };
+    });
+  });
+}
+
+const { tituloModulo, nivel, banco, lecciones } = Astro.props;
+const preguntas: PreguntaDeTest[] = banco.map((p) => ({
+  id: p.id,
+  leccion: p.leccion,
+  enunciado: p.enunciado,
+  ...(p.sql ? { sqlHtml: resaltarSql(p.sql) } : {}),
+  opciones: p.opciones,
+}));
+const nombreNivel = NOMBRE_NIVEL[nivel];
+---
+
+<BaseLayout
+  title={`Test de ${tituloModulo}, ${nombreNivel}`}
+  description={`Test del módulo ${tituloModulo}, nivel ${nombreNivel}: preguntas que mezclan sus lecciones.`}
+>
+  <article class="lesson-page">
+    <a class="back" href="/">
+      <span class="icon" aria-hidden="true">
+        arrow_back
+      </span>
+      Camino
+    </a>
+    <ol class="crumbs" aria-label="Estás en">
+      <li>{tituloModulo}</li>
+      <li>{nombreNivel}</li>
+      <li>Test del módulo</li>
+    </ol>
+    <h1>Test del módulo</h1>
+    <p class="lede">
+      Preguntas que mezclan las lecciones de {tituloModulo} en el nivel {nombreNivel}. Cada una se
+      corrige al momento, y al final tienes la nota y las lecciones que conviene repasar.
+    </p>
+
+    {preguntas.length > 0 ? (
+      <section class="quiz-zone test-zone" aria-labelledby="h-test">
+        <Test client:visible preguntas={preguntas} lecciones={lecciones} caminoHref="/" />
+      </section>
+    ) : (
+      <section class="test-empty" aria-labelledby="h-test-empty">
+        <h2 id="h-test-empty">Todavía no hay test en este nivel</h2>
+        <p>
+          Las preguntas del test llegan a medida que se publican las lecciones. Mientras tanto, cada
+          lección tiene su quiz.
+        </p>
+        <a class="btn btn-primary" href="/">
+          Volver al camino
+        </a>
+      </section>
+    )}
+  </article>
+</BaseLayout>

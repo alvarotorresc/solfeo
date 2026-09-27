@@ -1,0 +1,65 @@
+{
+  "name": "solfeo",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Software engineering theory, module by module, in Spanish.",
+  "license": "AGPL-3.0-or-later",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "packageManager": "pnpm@10.30.2",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "astro check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings 0",
+    "prepare": "lefthook install",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "content:check": "tsx scripts/validate-content.ts"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lefthook",
+      "sharp"
+    ]
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "0.4.2",
+    "@astrojs/preact": "6.0.5",
+    "@fontsource-variable/atkinson-hyperlegible-mono": "5.3.0",
+    "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
+    "astro": "7.3.5",
+    "preact": "10.29.8",
+    "prismjs": "1.30.0",
+    "satteri": "0.10.5",
+    "sql.js": "1.14.2",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@eslint/js": "10.0.1",
+    "@types/hast": "3.0.5",
+    "@types/js-yaml": "4.0.9",
+    "@types/prismjs": "1.26.6",
+    "@types/sql.js": "1.4.11",
+    "@vitest/coverage-v8": "5.0.2",
+    "eslint": "10.11.0",
+    "eslint-plugin-astro": "3.2.1",
+    "globals": "17.12.0",
+    "js-yaml": "4.3.2",
+    "lefthook": "2.1.14",
+    "prettier": "3.9.9",
+    "prettier-plugin-astro": "1.1.0",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.70.1",
+    "vitest": "5.0.2"
+  }
+}

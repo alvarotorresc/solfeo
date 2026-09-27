@@ -1,0 +1,127 @@
+# Temario de Bases de datos. Crece con el tiempo: cada nivel tiene las lecciones que haga falta.
+# Los IDs y las carpetas son estables y no se reutilizan con otro significado: el resto del
+# contenido (quiz, test, casos, pares) y el progreso guardado los referencian. Una lección nueva
+# toma el siguiente número libre del nivel (ID y carpeta) y se coloca en el camino con «orden»,
+# que no tiene por qué coincidir con ese número.
+modulo: bases-de-datos
+lecciones:
+  - id: bd-f-01
+    nivel: fundamentos
+    orden: 1
+    carpeta: 01-que-es-una-base-de-datos
+    titulo: Qué es una base de datos
+  - id: bd-f-02
+    nivel: fundamentos
+    orden: 2
+    carpeta: 02-modelo-relacional
+    titulo: El modelo relacional
+  - id: bd-f-03
+    nivel: fundamentos
+    orden: 3
+    carpeta: 03-claves-primarias-y-foraneas
+    titulo: Claves primarias y foráneas
+  - id: bd-f-04
+    nivel: fundamentos
+    orden: 4
+    carpeta: 04-consultar-con-select
+    titulo: Consultar con SELECT
+  - id: bd-f-05
+    nivel: fundamentos
+    orden: 5
+    carpeta: 05-agregar-y-agrupar
+    titulo: Agregar y agrupar
+  - id: bd-f-06
+    nivel: fundamentos
+    orden: 6
+    carpeta: 06-combinar-tablas-con-join
+    titulo: Combinar tablas con JOIN
+  - id: bd-f-07
+    nivel: fundamentos
+    orden: 7
+    carpeta: 07-modificar-datos
+    titulo: Modificar datos
+  - id: bd-f-08
+    nivel: fundamentos
+    orden: 8
+    carpeta: 08-disenar-un-esquema
+    titulo: Diseñar un esquema sencillo
+  - id: bd-i-01
+    nivel: intermedio
+    orden: 1
+    carpeta: 01-normalizacion
+    titulo: Normalización
+  - id: bd-i-02
+    nivel: intermedio
+    orden: 2
+    carpeta: 02-subconsultas-cte-y-vistas
+    titulo: 'Subconsultas, CTE y vistas'
+  - id: bd-i-03
+    nivel: intermedio
+    orden: 3
+    carpeta: 03-funciones-de-ventana
+    titulo: Funciones de ventana
+  - id: bd-i-04
+    nivel: intermedio
+    orden: 4
+    carpeta: 04-null-y-logica-de-tres-valores
+    titulo: NULL y lógica de tres valores
+  - id: bd-i-05
+    nivel: intermedio
+    orden: 5
+    carpeta: 05-indices-por-dentro
+    titulo: Índices por dentro
+  - id: bd-i-06
+    nivel: intermedio
+    orden: 6
+    carpeta: 06-planes-de-ejecucion
+    titulo: Planes de ejecución e índices compuestos
+  - id: bd-i-07
+    nivel: intermedio
+    orden: 7
+    carpeta: 07-transacciones-y-acid
+    titulo: Transacciones y ACID
+  - id: bd-i-08
+    nivel: intermedio
+    orden: 8
+    carpeta: 08-la-base-de-datos-desde-la-aplicacion
+    titulo: La base de datos desde la aplicación
+  - id: bd-a-01
+    nivel: avanzado
+    orden: 1
+    carpeta: 01-niveles-de-aislamiento
+    titulo: Niveles de aislamiento
+  - id: bd-a-02
+    nivel: avanzado
+    orden: 2
+    carpeta: 02-bloqueos-y-mvcc
+    titulo: 'Concurrencia: bloqueos y MVCC'
+  - id: bd-a-03
+    nivel: avanzado
+    orden: 3
+    carpeta: 03-optimizacion-de-consultas
+    titulo: Optimización de consultas
+  - id: bd-a-04
+    nivel: avanzado
+    orden: 4
+    carpeta: 04-migraciones-sin-parada
+    titulo: Migraciones sin parada
+  - id: bd-a-05
+    nivel: avanzado
+    orden: 5
+    carpeta: 05-replicacion
+    titulo: Replicación
+  - id: bd-a-06
+    nivel: avanzado
+    orden: 6
+    carpeta: 06-particionado-y-sharding
+    titulo: Particionado y sharding
+  - id: bd-a-07
+    nivel: avanzado
+    orden: 7
+    carpeta: 07-nosql-y-cap
+    titulo: NoSQL y el teorema CAP
+  - id: bd-a-08
+    nivel: avanzado
+    orden: 8
+    carpeta: 08-durabilidad-y-recuperacion
+    titulo: Durabilidad y recuperación

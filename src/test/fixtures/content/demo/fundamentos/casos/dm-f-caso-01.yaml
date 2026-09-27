@@ -1,0 +1,40 @@
+id: dm-f-caso-01
+modulo: demo
+nivel: fundamentos
+titulo: El catálogo desaparece
+escenario: Un script de limpieza deja la tabla de productos vacía.
+pregunta: ¿Cómo averiguarías qué ha pasado y qué cambiarías?
+repreguntas:
+  - ¿Cómo evitarías que vuelva a pasar?
+  - ¿Qué comprobarías antes de lanzar el script otra vez?
+respuesta_modelo: |
+  Primero contaría las filas:
+
+  ```sql
+  SELECT count(*) FROM productos;
+  ```
+
+  En otro gestor usaría su propia sintaxis:
+
+  ```sql no-ejecutar motivo="Sintaxis de otro gestor"
+  SELECT TOP 1 * FROM productos;
+  ```
+rubrica:
+  - id: p1
+    punto: Cuenta las filas antes de nada.
+    lecciones: [dm-f-01]
+  - id: p2
+    punto: Revisa el WHERE del borrado.
+    lecciones: [dm-f-01]
+  - id: p3
+    punto: Propone probar en una copia.
+    lecciones: [dm-f-02]
+  - id: p4
+    punto: Propone una copia de seguridad.
+    lecciones: [dm-f-01]
+sql: DELETE FROM productos WHERE precio < 2; SELECT count(*) AS n FROM productos;
+esperado:
+  columnas: [n]
+  filas: [[2]]
+  orden_importa: true
+  muta: true

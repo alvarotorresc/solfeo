@@ -1,0 +1,4 @@
+pnpm-lock.yaml
+LICENSE
+# Validator fixtures are test data, kept exactly as written.
+src/test/fixtures/

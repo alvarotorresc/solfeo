@@ -1,0 +1,17 @@
+modulo: demo
+lecciones:
+  - id: dm-f-01
+    nivel: fundamentos
+    orden: 1
+    carpeta: 01-primera
+    titulo: Primera lección
+  - id: dm-f-02
+    nivel: fundamentos
+    orden: 2
+    carpeta: 02-segunda
+    titulo: Segunda lección, aún sin escribir
+  - id: dm-i-01
+    nivel: intermedio
+    orden: 1
+    carpeta: 01-otra
+    titulo: Lección de otro nivel

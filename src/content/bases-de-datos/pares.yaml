@@ -1,0 +1,35 @@
+- id: bd-f-par-01
+  concepto: Clave primaria
+  definicion: Columna o conjunto de columnas que identifica cada fila de una tabla sin repetirse nunca.
+  leccion: bd-f-03
+  nivel: fundamentos
+- id: bd-f-par-02
+  concepto: DISTINCT
+  definicion: Quita del resultado las filas que se repiten, comparando todas sus columnas a la vez.
+  leccion: bd-f-04
+  nivel: fundamentos
+- id: bd-f-par-03
+  concepto: IS NULL
+  definicion: Forma correcta de preguntar si a una columna le falta el valor, ya que compararla con = no sirve.
+  leccion: bd-f-04
+  nivel: fundamentos
+- id: bd-f-par-04
+  concepto: Persistencia
+  definicion: Propiedad de los datos que siguen existiendo después de que se cierre el programa que los creó.
+  leccion: bd-f-01
+  nivel: fundamentos
+- id: bd-f-par-05
+  concepto: SGBD
+  definicion: Programa que guarda, protege y responde consultas sobre un conjunto de datos, entre la aplicación y el disco.
+  leccion: bd-f-01
+  nivel: fundamentos
+- id: bd-f-par-06
+  concepto: COUNT(columna)
+  definicion: Devuelve cuántas filas tienen un valor en ese campo, dejando fuera las que tienen NULL.
+  leccion: bd-f-05
+  nivel: fundamentos
+- id: bd-f-par-07
+  concepto: HAVING
+  definicion: Filtro que se aplica a los grupos ya formados y puede usar resultados de funciones de agregado.
+  leccion: bd-f-05
+  nivel: fundamentos

@@ -1,0 +1,364 @@
+/*
+ * Matching game. Global (not scoped) because the Preact island renders this markup; every class
+ * carries the `juego-` prefix so it never clashes with the quiz or the path.
+ * States never rely on colour alone: a matched card shows a check and its pair number, the
+ * selected one says «Elegido» and a miss says «No es esa».
+ */
+.juego-page {
+  max-width: 960px;
+}
+.juego-page h1 {
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+  font-weight: 800;
+}
+.juego-lede {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin: 0 0 28px;
+  max-width: 62ch;
+}
+.juego-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
+  padding: 28px;
+}
+.juego-entra {
+  animation: view-in 0.26s var(--ease-out) both;
+}
+
+/* ---------- elección ---------- */
+.juego-eleccion {
+  display: grid;
+  gap: 20px;
+  justify-items: start;
+  max-width: 680px;
+}
+.juego-eleccion .hint {
+  margin: 0;
+}
+.juego-modulo {
+  margin: 0;
+}
+.juego-grupo {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.juego-grupo legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 10px;
+}
+.juego-radios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+.juego-radios label {
+  position: relative;
+  display: flex;
+  min-height: 56px;
+  padding: 10px 14px;
+  border-radius: var(--r-btn);
+  border: 2px solid var(--line);
+  background: var(--bg);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.2s ease,
+    transform 0.14s var(--ease-out);
+}
+.juego-radios label:active {
+  transform: scale(0.98);
+}
+.juego-radios input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.juego-radios label > span {
+  display: grid;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.juego-radios small {
+  font-weight: 400;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+.juego-radios label:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--mark);
+}
+/* Not only colour: the chosen option also gets a check before its name. */
+.juego-radios label:has(input:checked) > span::before {
+  content: 'check' / '';
+  font-family: 'Material Symbols Rounded';
+  font-weight: 500;
+  font-size: 1.1rem;
+  line-height: 1;
+  font-feature-settings: 'liga';
+  color: var(--accent);
+  float: right;
+  margin-left: 8px;
+}
+.juego-radios label:has(input:focus-visible) {
+  outline: 3px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+.juego-radios label.off {
+  cursor: not-allowed;
+  border-style: dashed;
+  color: var(--muted);
+}
+.juego-radios label.off:active {
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .juego-radios label:not(.off):hover {
+    border-color: var(--accent-bright);
+  }
+}
+
+/* ---------- tablero ---------- */
+.juego-cabeza {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.juego-contexto {
+  margin: 0;
+  font-weight: 700;
+}
+.juego-cuenta {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.juego-tablero .steps {
+  margin: 12px 0 16px;
+}
+.juego-ayuda {
+  margin: 0 0 20px;
+  color: var(--muted);
+}
+.juego-columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 24px;
+  align-items: start;
+}
+.juego-columnas h2 {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+.juego-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.juego-carta {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding: 12px 16px;
+  text-align: left;
+  border-radius: var(--r-btn);
+  border: 2px solid var(--line);
+  background: var(--bg);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1.4;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.14s var(--ease-out),
+    border-color 0.15s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+}
+.juego-concepto .juego-texto {
+  font-weight: 700;
+}
+.juego-carta:active:not([aria-disabled='true']) {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .juego-carta:not([aria-disabled='true']):hover {
+    border-color: var(--accent-bright);
+  }
+}
+.juego-carta[aria-disabled='true'] {
+  cursor: default;
+  color: inherit;
+}
+.juego-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+.juego-marca .icon {
+  font-size: 1rem;
+}
+.juego-carta.is-sel {
+  border-color: var(--accent);
+  background: var(--mark);
+}
+.juego-marca.sel {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.juego-carta.is-ok {
+  border-color: var(--ok);
+  background: var(--ok-bg);
+}
+.juego-marca.ok {
+  color: var(--ok);
+  border: 1px solid currentColor;
+}
+.juego-marca.ok .icon {
+  animation: juego-pop 0.34s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.juego-carta.is-bad {
+  border-color: var(--bad);
+  background: var(--bad-bg);
+  animation: juego-shake 0.32s var(--ease-out);
+}
+.juego-marca.bad {
+  color: var(--bad);
+}
+.juego-pie {
+  margin-top: 20px;
+}
+@keyframes juego-pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes juego-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
+/* ---------- resumen y vacío ---------- */
+.juego-resumen,
+.juego-vacio {
+  max-width: 680px;
+}
+.juego-resumen h2,
+.juego-vacio h2 {
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  margin: 4px 0 8px;
+}
+.juego-resumen > p,
+.juego-vacio p {
+  margin: 0 0 12px;
+}
+.juego-repaso {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: grid;
+  gap: 10px;
+}
+.juego-repaso li {
+  display: grid;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: var(--r-btn);
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.juego-repaso span {
+  color: var(--muted);
+}
+.juego-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ---------- móvil ---------- */
+@media (max-width: 720px) {
+  .juego-card {
+    padding: 20px 16px;
+  }
+  .juego-columnas {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  /* Concepts are short: two per row keeps the definitions within reach of the thumb. */
+  .juego-lista-conceptos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .juego-lista-conceptos .juego-carta {
+    padding: 10px 12px;
+    align-content: center;
+  }
+  .juego-acciones,
+  .juego-acciones .btn,
+  .juego-eleccion .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .juego-eleccion {
+    justify-items: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .juego-entra {
+    animation: fade 0.18s ease both;
+  }
+  .juego-carta.is-bad {
+    animation: none;
+  }
+  .juego-marca.ok .icon {
+    animation: fade 0.18s ease both;
+  }
+  .juego-carta:active:not([aria-disabled='true']),
+  .juego-radios label:active {
+    transform: none;
+  }
+}

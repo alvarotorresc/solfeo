@@ -1,0 +1,28 @@
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# script-src and style-src come from the per-page CSP <meta> that Astro generates with hashes.
+# This header only adds what a <meta> cannot enforce; browsers apply both policies together.
+#
+# The SQL playground runs sql.js in a same-origin Web Worker, and a worker follows the CSP of its
+# own response, which is this header. Adding default-src or script-src here, or loading the worker
+# from a blob: URL (which inherits the page's <meta>), would block its wasm unless that policy also
+# allows 'wasm-unsafe-eval'.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -1,0 +1,5 @@
+- id: demo
+  prefijo: dm
+  orden: 1
+  titulo: Módulo de prueba
+  disponible: true

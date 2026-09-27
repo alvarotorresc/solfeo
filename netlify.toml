@@ -5,6 +5,10 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Production publishes reviewed content only; deploy previews keep drafts so they can be reviewed.
+[context.production.environment]
+  SOLFEO_SOLO_REVISADO = "1"
+
 # script-src and style-src come from the per-page CSP <meta> that Astro generates with hashes.
 # This header only adds what a <meta> cannot enforce; browsers apply both policies together.
 #
